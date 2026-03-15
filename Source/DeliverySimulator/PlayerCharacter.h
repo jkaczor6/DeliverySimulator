@@ -9,6 +9,8 @@ class USkeletalMeshComponent;
 class UInputAction;
 class UInputMappingContext;
 class UCameraComponent;
+class USceneComponent;
+class ADeliveryPackage;
 struct FInputActionValue;
 
 UCLASS()
@@ -25,6 +27,7 @@ public:
 	
 	void MoveInput(const FInputActionValue& Value);
 	void LookInput(const FInputActionValue& Value);
+	void SpawnDebugBoxInput(const FInputActionValue& Value);
 	void DoJumpStart(const FInputActionValue& Value);
 	void DoJumpEnd(const FInputActionValue& Value);
 	
@@ -32,6 +35,12 @@ public:
 	USkeletalMeshComponent* FirstPersonMesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UCameraComponent* FirstPersonCameraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	USceneComponent* BoxSocket;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ADeliveryPackage> BoxClass;
+	UPROPERTY(VisibleAnywhere)
+	ADeliveryPackage* DeliveryPackage;
 	
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputMappingContext* IMC;
@@ -41,4 +50,6 @@ public:
 	UInputAction* LookAction;
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* JumpAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* SpawnDebugBoxAction;
 };

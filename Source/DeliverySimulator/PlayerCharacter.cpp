@@ -4,6 +4,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/SceneComponent.h"
+#include "DeliveryPackage.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -26,6 +28,9 @@ APlayerCharacter::APlayerCharacter()
 	FirstPersonCameraComponent->FirstPersonFieldOfView = 70.0f;
 	FirstPersonCameraComponent->FirstPersonScale = 0.6f;
 
+	BoxSocket = CreateDefaultSubobject<USceneComponent>(TEXT("Box Socket"));
+	BoxSocket->SetupAttachment(RootComponent);
+	
 	// configure the character comps
 	GetMesh()->SetOwnerNoSee(true);
 	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation;
@@ -65,6 +70,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		// Jumping
 		EIC->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayerCharacter::DoJumpStart);
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed, this, &APlayerCharacter::DoJumpEnd);
+		
+		// Debug Box
+		EIC->BindAction(SpawnDebugBoxAction, ETriggerEvent::Started, this, &APlayerCharacter::SpawnDebugBoxInput);
 	}
 	
 }
@@ -96,6 +104,16 @@ void APlayerCharacter::LookInput(const FInputActionValue& Value)
 	
 	AddControllerYawInput(-LookAxisVector.X);
 	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void APlayerCharacter::SpawnDebugBoxInput(const FInputActionValue& Value)
+{
+	// GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("SpawnDebugBox"));
+	
+	FTransform SpawnTransform = BoxSocket->GetComponentTransform();
+	DeliveryPackage = GetWorld()->SpawnActor<ADeliveryPackage>(BoxClass, SpawnTransform);
+	
+	DeliveryPackage->AttachToComponent(BoxSocket, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void APlayerCharacter::DoJumpStart(const FInputActionValue& Value)
