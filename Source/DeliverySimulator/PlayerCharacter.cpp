@@ -110,6 +110,8 @@ void APlayerCharacter::LookInput(const FInputActionValue& Value)
 
 void APlayerCharacter::SpawnDebugBoxInput(const FInputActionValue& Value)
 {
+	if (HasActiveOrder) return;
+	
 	TArray<AActor*> HouseActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AHouse::StaticClass(), HouseActors);
 	for (AActor* HouseActor : HouseActors)
@@ -122,7 +124,6 @@ void APlayerCharacter::SpawnDebugBoxInput(const FInputActionValue& Value)
 	}
 	
 	int32 RandomHouseIndex = FMath::RandRange(0, Houses.Num());
-	FVector DeliveryPoint = Houses[RandomHouseIndex]->GetDeliveryPoint();
 	Houses[RandomHouseIndex]->DeliveryPoint->SetVisibility(true);
 	if (Houses[RandomHouseIndex])
 	{	
