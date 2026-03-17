@@ -11,6 +11,7 @@ class UInputMappingContext;
 class UCameraComponent;
 class USceneComponent;
 class ADeliveryPackage;
+class AHouse;
 struct FInputActionValue;
 
 UCLASS()
@@ -31,6 +32,9 @@ public:
 	void DoJumpStart(const FInputActionValue& Value);
 	void DoJumpEnd(const FInputActionValue& Value);
 	
+	UFUNCTION()
+	void DeliverPackage();
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* FirstPersonMesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
@@ -41,6 +45,11 @@ public:
 	TSubclassOf<ADeliveryPackage> BoxClass;
 	UPROPERTY(VisibleAnywhere)
 	ADeliveryPackage* DeliveryPackage;
+	UPROPERTY(VisibleAnywhere)
+	int32 DeliveredPackages = 0;
+	
+	TArray<AHouse*> Houses;
+	bool HasActiveOrder = false;
 	
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputMappingContext* IMC;

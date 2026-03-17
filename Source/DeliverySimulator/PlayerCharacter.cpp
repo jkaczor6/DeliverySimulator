@@ -6,7 +6,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/SceneComponent.h"
 #include "DeliveryPackage.h"
+#include "House.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -108,12 +110,31 @@ void APlayerCharacter::LookInput(const FInputActionValue& Value)
 
 void APlayerCharacter::SpawnDebugBoxInput(const FInputActionValue& Value)
 {
-	// GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("SpawnDebugBox"));
+	TArray<AActor*> HouseActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AHouse::StaticClass(), HouseActors);
+	for (AActor* HouseActor : HouseActors)
+	{
+		AHouse* House = Cast<AHouse>(HouseActor);
+		if (House)
+		{
+			Houses.Add(House);
+		}
+	}
+	
+	int32 RandomHouseIndex = FMath::RandRange(0, Houses.Num());
+	FVector DeliveryPoint = Houses[RandomHouseIndex]->GetDeliveryPoint();
+	Houses[RandomHouseIndex]->DeliveryPoint->SetVisibility(true);
+	if (Houses[RandomHouseIndex])
+	{	
+		Houses[RandomHouseIndex]->OnPackageDeliveredDelegate.AddDynamic(this, &APlayerCharacter::DeliverPackage);
+	}
 	
 	FTransform SpawnTransform = BoxSocket->GetComponentTransform();
 	DeliveryPackage = GetWorld()->SpawnActor<ADeliveryPackage>(BoxClass, SpawnTransform);
 	
 	DeliveryPackage->AttachToComponent(BoxSocket, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	
+	HasActiveOrder = true;
 }
 
 void APlayerCharacter::DoJumpStart(const FInputActionValue& Value)
@@ -124,5 +145,13 @@ void APlayerCharacter::DoJumpStart(const FInputActionValue& Value)
 void APlayerCharacter::DoJumpEnd(const FInputActionValue& Value)
 {
 	StopJumping();
+}
+
+void APlayerCharacter::DeliverPackage()
+{
+	DeliveryPackage->Destroy();
+	DeliveredPackages++;
+	HasActiveOrder = false;
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Package %d Delivered"), DeliveredPackages));
 }
 
