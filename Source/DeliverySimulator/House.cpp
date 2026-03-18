@@ -34,7 +34,7 @@ void AHouse::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 {
 	if (APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor))
 	{
-		if (Player->HasActiveOrder)
+		if (Player->HasActiveOrder && Player->IsHoldingPackage)
 		{
 			DeliveryPoint->SetVisibility(false);
 			OnPackageDeliveredDelegate.Broadcast();		

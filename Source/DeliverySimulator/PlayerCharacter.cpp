@@ -7,6 +7,7 @@
 #include "Components/SceneComponent.h"
 #include "DeliveryPackage.h"
 #include "House.h"
+#include "Truck.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -49,6 +50,18 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	TArray<AActor*> HouseActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AHouse::StaticClass(), HouseActors);
+	for (AActor* HouseActor : HouseActors)
+	{
+		AHouse* House = Cast<AHouse>(HouseActor);
+		if (House)
+		{
+			Houses.Add(House);
+		}
+	}
+	
+	Truck = Cast<ATruck>(UGameplayStatics::GetActorOfClass(GetWorld(), ATruck::StaticClass()));
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -75,6 +88,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		
 		// Debug Box
 		EIC->BindAction(SpawnDebugBoxAction, ETriggerEvent::Started, this, &APlayerCharacter::SpawnDebugBoxInput);
+		
+		// Interacting
+		EIC->BindAction(InteractAction, ETriggerEvent::Started, this, &APlayerCharacter::InteractInput);
 	}
 	
 }
@@ -108,25 +124,32 @@ void APlayerCharacter::LookInput(const FInputActionValue& Value)
 	AddControllerPitchInput(LookAxisVector.Y);
 }
 
+void APlayerCharacter::InteractInput(const FInputActionValue& Value)
+{
+	if (Truck->PlayerOverlappingWithTrunk)
+	{
+		if (!Truck->HasPackageAtTrunk && IsHoldingPackage)
+		{
+			HidePackage();
+			Truck->HasPackageAtTrunk = true;	
+		}
+		else if (Truck->HasPackageAtTrunk && !IsHoldingPackage)
+		{
+			PullOutPackage();
+			Truck->HasPackageAtTrunk = false;
+		}
+	}
+}
+
 void APlayerCharacter::SpawnDebugBoxInput(const FInputActionValue& Value)
 {
 	if (HasActiveOrder) return;
+	if (Houses.Num() == 0) return;
 	
-	TArray<AActor*> HouseActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AHouse::StaticClass(), HouseActors);
-	for (AActor* HouseActor : HouseActors)
-	{
-		AHouse* House = Cast<AHouse>(HouseActor);
-		if (House)
-		{
-			Houses.Add(House);
-		}
-	}
-	
-	int32 RandomHouseIndex = FMath::RandRange(0, Houses.Num());
-	Houses[RandomHouseIndex]->DeliveryPoint->SetVisibility(true);
+	int32 RandomHouseIndex = FMath::RandRange(0, Houses.Num() - 1);
 	if (Houses[RandomHouseIndex])
 	{	
+		Houses[RandomHouseIndex]->DeliveryPoint->SetVisibility(true);
 		Houses[RandomHouseIndex]->OnPackageDeliveredDelegate.AddDynamic(this, &APlayerCharacter::DeliverPackage);
 	}
 	
@@ -134,6 +157,10 @@ void APlayerCharacter::SpawnDebugBoxInput(const FInputActionValue& Value)
 	DeliveryPackage = GetWorld()->SpawnActor<ADeliveryPackage>(BoxClass, SpawnTransform);
 	
 	DeliveryPackage->AttachToComponent(BoxSocket, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	if (DeliveryPackage)
+	{
+		IsHoldingPackage = true;
+	}
 	
 	HasActiveOrder = true;
 }
@@ -150,9 +177,25 @@ void APlayerCharacter::DoJumpEnd(const FInputActionValue& Value)
 
 void APlayerCharacter::DeliverPackage()
 {
-	DeliveryPackage->Destroy();
-	DeliveredPackages++;
-	HasActiveOrder = false;
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Package %d Delivered"), DeliveredPackages));
+	if (HasActiveOrder && IsHoldingPackage)
+	{
+		DeliveryPackage->Destroy();
+		DeliveredPackages++;
+		HasActiveOrder = false;
+		IsHoldingPackage = false;
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Package %d Delivered"), DeliveredPackages));
+	}
+}
+
+void APlayerCharacter::HidePackage()
+{
+	DeliveryPackage->BoxMesh->SetVisibility(false);
+	IsHoldingPackage = false;
+}
+
+void APlayerCharacter::PullOutPackage()
+{
+	DeliveryPackage->BoxMesh->SetVisibility(true);
+	IsHoldingPackage = true;
 }
 

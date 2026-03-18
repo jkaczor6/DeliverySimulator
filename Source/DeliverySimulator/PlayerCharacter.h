@@ -12,6 +12,7 @@ class UCameraComponent;
 class USceneComponent;
 class ADeliveryPackage;
 class AHouse;
+class ATruck;
 struct FInputActionValue;
 
 UCLASS()
@@ -28,12 +29,15 @@ public:
 	
 	void MoveInput(const FInputActionValue& Value);
 	void LookInput(const FInputActionValue& Value);
+	void InteractInput(const FInputActionValue& Value);
 	void SpawnDebugBoxInput(const FInputActionValue& Value);
 	void DoJumpStart(const FInputActionValue& Value);
 	void DoJumpEnd(const FInputActionValue& Value);
 	
 	UFUNCTION()
 	void DeliverPackage();
+	void HidePackage();
+	void PullOutPackage();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* FirstPersonMesh;
@@ -49,7 +53,9 @@ public:
 	int32 DeliveredPackages = 0;
 	
 	TArray<AHouse*> Houses;
+	ATruck* Truck;
 	bool HasActiveOrder = false;
+	bool IsHoldingPackage = false;
 	
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputMappingContext* IMC;
@@ -57,6 +63,8 @@ public:
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* LookAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* InteractAction;
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* JumpAction;
 	UPROPERTY(EditAnywhere, Category="Input")
