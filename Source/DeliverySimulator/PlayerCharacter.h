@@ -13,6 +13,7 @@ class USceneComponent;
 class ADeliveryPackage;
 class AHouse;
 class ATruck;
+class UEnhancedInputLocalPlayerSubsystem;
 struct FInputActionValue;
 
 UCLASS()
@@ -36,8 +37,11 @@ public:
 	
 	UFUNCTION()
 	void DeliverPackage();
+	
 	void HidePackage();
 	void PullOutPackage();
+	void EnterTruck();
+	void ExitTruck();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* FirstPersonMesh;
@@ -56,9 +60,12 @@ public:
 	ATruck* Truck;
 	bool HasActiveOrder = false;
 	bool IsHoldingPackage = false;
+	bool IsInTruck = false;
 	
 	UPROPERTY(EditAnywhere, Category="Input")
-	UInputMappingContext* IMC;
+	UInputMappingContext* DefaultIMC;
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputMappingContext* TruckIMC;
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -69,4 +76,7 @@ public:
 	UInputAction* JumpAction;
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* SpawnDebugBoxAction;
+	
+private:
+	UEnhancedInputLocalPlayerSubsystem* GetSubsystem();
 };

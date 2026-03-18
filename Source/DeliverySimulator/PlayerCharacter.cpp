@@ -103,7 +103,7 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(APC->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(IMC, 0);
+			Subsystem->AddMappingContext(DefaultIMC, 0);
 		}
 	}
 }
@@ -137,6 +137,21 @@ void APlayerCharacter::InteractInput(const FInputActionValue& Value)
 		{
 			PullOutPackage();
 			Truck->HasPackageAtTrunk = false;
+		}
+	}
+	if (Truck->PlayerOverlappingWithCabin)
+	{
+		if (!IsHoldingPackage && !IsInTruck)
+		{
+			EnterTruck();
+		}
+		else if (!IsHoldingPackage && IsInTruck)
+		{
+			ExitTruck();
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("You cant enter Truck while holding package")));
 		}
 	}
 }
@@ -197,5 +212,43 @@ void APlayerCharacter::PullOutPackage()
 {
 	DeliveryPackage->BoxMesh->SetVisibility(true);
 	IsHoldingPackage = true;
+}
+
+void APlayerCharacter::EnterTruck()
+{
+	IsInTruck = true;
+	
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = GetSubsystem())
+	{
+		Subsystem->RemoveMappingContext(DefaultIMC);
+		Subsystem->AddMappingContext(TruckIMC, 0);
+	}
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Entering Truck")));
+}
+
+void APlayerCharacter::ExitTruck()
+{
+	IsInTruck = false;
+	
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = GetSubsystem())
+	{
+		Subsystem->RemoveMappingContext(TruckIMC);
+		Subsystem->AddMappingContext(DefaultIMC, 0);
+	}
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Exiting Truck")));
+}
+
+UEnhancedInputLocalPlayerSubsystem* APlayerCharacter::GetSubsystem()
+{
+	if (APlayerController* APC = Cast<APlayerController>(GetController()))
+	{
+		if (ULocalPlayer* LP = APC->GetLocalPlayer())
+		{
+			return LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		}
+	}
+	return nullptr;
 }
 

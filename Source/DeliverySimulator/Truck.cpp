@@ -24,6 +24,7 @@ void ATruck::BeginPlay()
 	
 	CabinPlayerDetector->OnComponentBeginOverlap.AddDynamic(this, &ATruck::OnCabinOverlapBegin);
 	CabinPlayerDetector->OnComponentEndOverlap.AddDynamic(this, &ATruck::OnCabinOverlapEnd);
+	
 	TrunkPlayerDetector->OnComponentBeginOverlap.AddDynamic(this, &ATruck::OnTrunkOverlapBegin);
 	TrunkPlayerDetector->OnComponentEndOverlap.AddDynamic(this, &ATruck::OnTrunkOverlapEnd);
 }
@@ -34,10 +35,8 @@ void ATruck::Tick(float DeltaTime)
 
 }
 
-void ATruck::OnCabinOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ATruck::OnCabinOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Player can enter cabin")));
 	APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor);
 	if (Player)
 	{
@@ -51,18 +50,12 @@ void ATruck::OnCabinOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor*
 	PlayerOverlappingWithCabin = false;
 }
 
-void ATruck::OnTrunkOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ATruck::OnTrunkOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Player can leave package at trunk")));
 	APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor);
 	if (Player)
 	{
 		PlayerOverlappingWithTrunk = true;
-		if (Player->IsHoldingPackage)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Package hidden at trunk")));
-		}
 	}
 }
 
