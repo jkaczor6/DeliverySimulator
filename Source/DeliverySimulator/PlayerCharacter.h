@@ -65,8 +65,6 @@ public:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputMappingContext* DefaultIMC;
 	UPROPERTY(EditAnywhere, Category="Input")
-	UInputMappingContext* TruckIMC;
-	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* LookAction;
@@ -76,7 +74,4 @@ public:
 	UInputAction* JumpAction;
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* SpawnDebugBoxAction;
-	
-private:
-	UEnhancedInputLocalPlayerSubsystem* GetSubsystem();
 };

@@ -21,7 +21,7 @@ public class DeliverySimulator : ModuleRules
 			"Slate"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] { "ChaosVehicles" });
 
 		PublicIncludePaths.AddRange(new string[] {
 			"DeliverySimulator",

@@ -103,6 +103,7 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(APC->GetLocalPlayer()))
 		{
+			Subsystem->ClearAllMappings();
 			Subsystem->AddMappingContext(DefaultIMC, 0);
 		}
 	}
@@ -144,10 +145,6 @@ void APlayerCharacter::InteractInput(const FInputActionValue& Value)
 		if (!IsHoldingPackage && !IsInTruck)
 		{
 			EnterTruck();
-		}
-		else if (!IsHoldingPackage && IsInTruck)
-		{
-			ExitTruck();
 		}
 		else
 		{
@@ -216,39 +213,16 @@ void APlayerCharacter::PullOutPackage()
 
 void APlayerCharacter::EnterTruck()
 {
+	if (!Truck) return;
+
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC) return;
+	
+	AttachToActor(Truck, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	
+	PC->Possess(Truck);
 	IsInTruck = true;
-	
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = GetSubsystem())
-	{
-		Subsystem->RemoveMappingContext(DefaultIMC);
-		Subsystem->AddMappingContext(TruckIMC, 0);
-	}
-	
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Entering Truck")));
 }
-
-void APlayerCharacter::ExitTruck()
-{
-	IsInTruck = false;
-	
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = GetSubsystem())
-	{
-		Subsystem->RemoveMappingContext(TruckIMC);
-		Subsystem->AddMappingContext(DefaultIMC, 0);
-	}
-	
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Exiting Truck")));
-}
-
-UEnhancedInputLocalPlayerSubsystem* APlayerCharacter::GetSubsystem()
-{
-	if (APlayerController* APC = Cast<APlayerController>(GetController()))
-	{
-		if (ULocalPlayer* LP = APC->GetLocalPlayer())
-		{
-			return LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-		}
-	}
-	return nullptr;
-}
-
