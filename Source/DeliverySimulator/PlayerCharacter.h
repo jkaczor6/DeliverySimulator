@@ -14,6 +14,7 @@ class ADeliveryPackage;
 class AHouse;
 class ATruck;
 class UEnhancedInputLocalPlayerSubsystem;
+class UTabletHUDWidget;
 struct FInputActionValue;
 
 UCLASS()
@@ -31,7 +32,7 @@ public:
 	void MoveInput(const FInputActionValue& Value);
 	void LookInput(const FInputActionValue& Value);
 	void InteractInput(const FInputActionValue& Value);
-	void SpawnDebugBoxInput(const FInputActionValue& Value);
+	void TabletInput(const FInputActionValue& Value);
 	void DoJumpStart(const FInputActionValue& Value);
 	void DoJumpEnd(const FInputActionValue& Value);
 	
@@ -41,7 +42,7 @@ public:
 	void HidePackage();
 	void PullOutPackage();
 	void EnterTruck();
-	void ExitTruck();
+	void StartNewOrder();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* FirstPersonMesh;
@@ -73,5 +74,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* JumpAction;
 	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* SpawnDebugBoxAction;
+	UInputAction* TabletAction;
+	
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TSubclassOf<UTabletHUDWidget> TabletHUDWidgetClass;
+	UTabletHUDWidget* TabletHUDWidget;
 };

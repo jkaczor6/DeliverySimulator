@@ -10,6 +10,7 @@
 #include "Truck.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "TabletHUDWidget.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -62,6 +63,13 @@ void APlayerCharacter::BeginPlay()
 	}
 	
 	Truck = Cast<ATruck>(UGameplayStatics::GetActorOfClass(GetWorld(), ATruck::StaticClass()));
+	
+	TabletHUDWidget = CreateWidget<UTabletHUDWidget>(UGameplayStatics::GetPlayerController(GetWorld(), 0), TabletHUDWidgetClass);
+	if (TabletHUDWidget)
+	{
+		TabletHUDWidget->AddToPlayerScreen();
+		TabletHUDWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -86,11 +94,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EIC->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayerCharacter::DoJumpStart);
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed, this, &APlayerCharacter::DoJumpEnd);
 		
-		// Debug Box
-		EIC->BindAction(SpawnDebugBoxAction, ETriggerEvent::Started, this, &APlayerCharacter::SpawnDebugBoxInput);
-		
 		// Interacting
 		EIC->BindAction(InteractAction, ETriggerEvent::Started, this, &APlayerCharacter::InteractInput);
+		
+		// Tablet
+		EIC->BindAction(TabletAction, ETriggerEvent::Started, this, &APlayerCharacter::TabletInput);
 	}
 	
 }
@@ -153,7 +161,7 @@ void APlayerCharacter::InteractInput(const FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::SpawnDebugBoxInput(const FInputActionValue& Value)
+void APlayerCharacter::StartNewOrder()
 {
 	if (HasActiveOrder) return;
 	if (Houses.Num() == 0) return;
@@ -175,6 +183,23 @@ void APlayerCharacter::SpawnDebugBoxInput(const FInputActionValue& Value)
 	}
 	
 	HasActiveOrder = true;
+}
+
+void APlayerCharacter::TabletInput(const FInputActionValue& Value)
+{
+	if (!TabletHUDWidget) return;
+	if (TabletHUDWidget->GetVisibility() == ESlateVisibility::Visible) return;
+	
+	TabletHUDWidget->SetVisibility(ESlateVisibility::Visible);
+	
+	APlayerController* APC = UGameplayStatics::GetPlayerController(GetWorld(),0);
+	if (!APC) return;
+	
+	APC->SetShowMouseCursor(true);
+	
+	FInputModeUIOnly Mode;
+	Mode.SetWidgetToFocus(TabletHUDWidget->TakeWidget());
+	APC->SetInputMode(Mode);
 }
 
 void APlayerCharacter::DoJumpStart(const FInputActionValue& Value)
