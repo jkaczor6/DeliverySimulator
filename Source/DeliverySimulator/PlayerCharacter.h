@@ -15,6 +15,7 @@ class AHouse;
 class ATruck;
 class UEnhancedInputLocalPlayerSubsystem;
 class UTabletHUDWidget;
+class ADayTimeManager;
 struct FInputActionValue;
 
 UCLASS()
@@ -59,6 +60,7 @@ public:
 	
 	TArray<AHouse*> Houses;
 	ATruck* Truck;
+	ADayTimeManager* DayTimeManager;
 	bool HasActiveOrder = false;
 	bool IsHoldingPackage = false;
 	bool IsInTruck = false;

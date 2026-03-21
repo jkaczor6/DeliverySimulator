@@ -2,6 +2,7 @@
 
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "DayTimeManager.h"
 #include "PlayerCharacter.h"
 
 void UTabletHUDWidget::ExitTablet()
@@ -24,7 +25,6 @@ void UTabletHUDWidget::StartOrderButtonClick()
 	Player->StartNewOrder();
 	ExitTablet();
 }
-
 void UTabletHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -34,4 +34,13 @@ void UTabletHUDWidget::NativeConstruct()
 	
 	StartOrderButton->OnClicked.Clear();
 	StartOrderButton->OnClicked.AddDynamic(this, &UTabletHUDWidget::StartOrderButtonClick);
+	
+	DayTimeManager = Cast<ADayTimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ADayTimeManager::StaticClass()));
+}
+
+void UTabletHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	
+	TimeDisplayText->SetText(FText::FromString(DayTimeManager->CurrentHour));
 }

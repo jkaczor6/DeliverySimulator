@@ -1,4 +1,6 @@
 #include "PlayerCharacter.h"
+
+#include "DayTimeManager.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -63,6 +65,7 @@ void APlayerCharacter::BeginPlay()
 	}
 	
 	Truck = Cast<ATruck>(UGameplayStatics::GetActorOfClass(GetWorld(), ATruck::StaticClass()));
+	DayTimeManager = Cast<ADayTimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ADayTimeManager::StaticClass()));
 	
 	TabletHUDWidget = CreateWidget<UTabletHUDWidget>(UGameplayStatics::GetPlayerController(GetWorld(), 0), TabletHUDWidgetClass);
 	if (TabletHUDWidget)
@@ -165,6 +168,7 @@ void APlayerCharacter::StartNewOrder()
 {
 	if (HasActiveOrder) return;
 	if (Houses.Num() == 0) return;
+	if (DayTimeManager->bIsDayFinished) return;
 	
 	int32 RandomHouseIndex = FMath::RandRange(0, Houses.Num() - 1);
 	if (Houses[RandomHouseIndex])
