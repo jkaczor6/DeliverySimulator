@@ -220,7 +220,9 @@ void APlayerCharacter::DeliverPackage()
 		DeliveredPackages++;
 		HasActiveOrder = false;
 		IsHoldingPackage = false;
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Package %d Delivered"), DeliveredPackages));
+		
+		FString Str = FString::Printf(TEXT("%d"), DeliveredPackages);
+		TabletHUDWidget->DeliveredPackagesCountText->SetText(FText::FromString(Str));
 	}
 }
 

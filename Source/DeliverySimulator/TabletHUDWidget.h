@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 #include "TabletHUDWidget.generated.h"
 
 class UButton;
@@ -16,6 +17,10 @@ public:
 	UButton* ExitButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UButton* StartOrderButton;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UTextBlock* TimeDisplayText;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UTextBlock* DeliveredPackagesCountText;
 	
 	UFUNCTION()
 	void ExitTablet();
