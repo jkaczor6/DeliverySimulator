@@ -15,7 +15,7 @@ ATruck::ATruck()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	Root = CreateDefaultSubobject<UBoxComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 	
 	TruckMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Truck Mesh"));

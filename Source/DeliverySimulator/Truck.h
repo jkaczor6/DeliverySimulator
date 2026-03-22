@@ -43,7 +43,7 @@ public:
 	void ThrottleReleased(const FInputActionValue& Value);
 	
 	UPROPERTY(VisibleAnywhere)
-	USceneComponent* Root;
+	UBoxComponent* Root;
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* TruckMesh;
 	UPROPERTY(VisibleAnywhere)
