@@ -177,6 +177,7 @@ void APlayerCharacter::StartNewOrder()
 	if (Houses[RandomHouseIndex])
 	{	
 		Houses[RandomHouseIndex]->DeliveryPoint->SetVisibility(true);
+		Houses[RandomHouseIndex]->HouseLocator->SetVisibility(true);
 		Houses[RandomHouseIndex]->OnPackageDeliveredDelegate.AddDynamic(this, &APlayerCharacter::DeliverPackage);
 	}
 	

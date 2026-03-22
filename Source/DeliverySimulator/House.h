@@ -28,6 +28,8 @@ public:
 	UStaticMeshComponent* HouseMesh;
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* DeliveryPoint;
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* HouseLocator;
 	
 	FOnPackageDelivered OnPackageDeliveredDelegate;
 };

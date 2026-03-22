@@ -14,6 +14,10 @@ AHouse::AHouse()
 	DeliveryPoint = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Delivery Point"));
 	DeliveryPoint->SetVisibility(false);
 	DeliveryPoint->SetupAttachment(RootComponent);
+	
+	HouseLocator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("House Locator"));
+	HouseLocator->SetVisibility(false);
+	HouseLocator->SetupAttachment(RootComponent);
 }
 
 void AHouse::BeginPlay()
@@ -37,6 +41,7 @@ void AHouse::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		if (Player->HasActiveOrder && Player->IsHoldingPackage)
 		{
 			DeliveryPoint->SetVisibility(false);
+			HouseLocator->SetVisibility(false);
 			OnPackageDeliveredDelegate.Broadcast();		
 		}
 	}
