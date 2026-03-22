@@ -13,6 +13,7 @@ class USceneComponent;
 class ADeliveryPackage;
 class AHouse;
 class ATruck;
+class AWarehouse;
 class UEnhancedInputLocalPlayerSubsystem;
 class UTabletHUDWidget;
 class ADayTimeManager;
@@ -61,6 +62,7 @@ public:
 	TArray<AHouse*> Houses;
 	ATruck* Truck;
 	ADayTimeManager* DayTimeManager;
+	AWarehouse* Warehouse;
 	bool HasActiveOrder = false;
 	bool IsHoldingPackage = false;
 	bool IsInTruck = false;

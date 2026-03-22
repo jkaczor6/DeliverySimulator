@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TabletHUDWidget.h"
+#include "Warehouse.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -66,6 +67,7 @@ void APlayerCharacter::BeginPlay()
 	
 	Truck = Cast<ATruck>(UGameplayStatics::GetActorOfClass(GetWorld(), ATruck::StaticClass()));
 	DayTimeManager = Cast<ADayTimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ADayTimeManager::StaticClass()));
+	Warehouse = Cast<AWarehouse>(UGameplayStatics::GetActorOfClass(GetWorld(), AWarehouse::StaticClass()));
 	
 	TabletHUDWidget = CreateWidget<UTabletHUDWidget>(UGameplayStatics::GetPlayerController(GetWorld(), 0), TabletHUDWidgetClass);
 	if (TabletHUDWidget)
@@ -169,6 +171,7 @@ void APlayerCharacter::StartNewOrder()
 	if (HasActiveOrder) return;
 	if (Houses.Num() == 0) return;
 	if (DayTimeManager->bIsDayFinished) return;
+	if (!Warehouse->PlayerOverlapping) return;
 	
 	int32 RandomHouseIndex = FMath::RandRange(0, Houses.Num() - 1);
 	if (Houses[RandomHouseIndex])
